@@ -1,0 +1,27 @@
+{
+  "name": "scrape-news",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattdeal/scrape-news.git"
+  },
+  "author": "Matt Deal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattdeal/scrape-news/issues"
+  },
+  "homepage": "https://github.com/mattdeal/scrape-news#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "cheerio": "^0.22.0",
+    "express": "^4.15.2",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^4.9.5",
+    "request": "^2.81.0"
+  }
+}
