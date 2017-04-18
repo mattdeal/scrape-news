@@ -7,7 +7,7 @@ var request = require("request");
 var cheerio = require("cheerio");
 
 // load articles
-var Comment = require("./models/Comment");
+var Comment = require("./models/Comment.js");
 var Article = require("./models/Article.js");
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
@@ -39,9 +39,7 @@ db.once("open", function() {
   console.log("Mongoose connection successful.");
 });
 
-
 // Routes
-
 app.get("/scrape", function(req, res) {
   request("http://reddit.com/r/technology", function(error, response, html) {
     var $ = cheerio.load(html);
