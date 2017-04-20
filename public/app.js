@@ -1,9 +1,13 @@
 // Grab the articles as a json
 $.getJSON("/articles", function(data) {
-  // For each one
+  if (data.length < 1) {
+    //show scrape button
+    $('#no-articles').append('<div class="btn btn-warning btn-block" id="btn-scrape">Get Articles!</div>');
+    return;
+  }
+
   for (var i = 0; i < data.length; i++) {
-    // Display the apropos information on the page
-    // $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+    // Display the information on the page
     $("#articles").append(makeArticle(data[i]._id, data[i].title, data[i].link));
   }
 });
@@ -21,6 +25,9 @@ function makeArticle(id, title, link) {
 
 // Whenever someone clicks a p tag
 $(document).on("click", ".panel-article", function() {
+  // show the comments panel
+  $('#comments-panel').show();
+
   // Empty the comments from the note section
   $("#comments").empty();
   // Save the id from the p tag
@@ -39,19 +46,27 @@ $(document).on("click", ".panel-article", function() {
       $("#comment-title").html(data.title);
       // A textarea to add a new note body
       $('#comment-new').empty();
-      // $("#comment-new").append("<textarea id='bodyinput' name='body'></textarea>");
       $("#comment-new").append('<div class="row"><div class="col-xs-12"><div class="form-group"><label for="bodyinput" class="col-lg-2 control-label">Comment</label><div class="col-lg-8"><input type="text" class="form-control" id="bodyinput" placeholder="Comment"></div><div class="col-lg-2"><div class="btn btn-info btn-block" data-id=' + data._id + ' id="savenote">Save</div></div></div></div></div>');
-      // A button to submit a new note, with the id of the article saved to it
-      $("#comment-new").append("<div class='row'><div class='col-xs-12'></div></div>");
 
       // If there's a note in the article
       if (data.comments) {
         // Place the body of the note in the body textarea
         for (var i = 0; i < data.comments.length; i++) {
-          $("#comments").append('<li>' + data.comments[i].body + '</li>');
+          $("#comments").append('<li>- ' + data.comments[i].body + '</li>');
         }
       }
     });
+});
+
+// get articles
+$(document).on("click", "#btn-scrape", function() {
+  $.ajax({
+    method: "GET",
+    url: '/scrape'
+  }).done(function(data){
+    console.log('done');
+    location.href = '/';
+  });
 });
 
 // When you click the savenote button
@@ -73,6 +88,6 @@ $(document).on("click", "#savenote", function() {
   });
 
   // Also, remove the values entered in the input and textarea for note entry
-  $("#comments").append('<li>' + $("#bodyinput").val() + '</li>');
+  $("#comments").append('<li>- ' + $("#bodyinput").val() + '</li>');
   $("#bodyinput").val("");
 });

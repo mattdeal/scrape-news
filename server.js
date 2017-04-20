@@ -26,8 +26,8 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 
 // Database configuration with mongoose
-// mongoose.connect("mongodb://heroku_fv44zl6d:ddc0kl09i49sjk1ljcl0toaclf@ds163360.mlab.com:63360/heroku_fv44zl6d");
-mongoose.connect("mongodb://localhost/scrapenews1");
+mongoose.connect("mongodb://heroku_fv44zl6d:ddc0kl09i49sjk1ljcl0toaclf@ds163360.mlab.com:63360/heroku_fv44zl6d");
+// mongoose.connect("mongodb://localhost/scrapenews4");
 
 var db = mongoose.connection;
 
@@ -45,8 +45,10 @@ db.once("open", function() {
 app.get("/scrape", function(req, res) {
   request("http://reddit.com/r/technology", function(error, response, html) {
     var $ = cheerio.load(html);
+    var articles = $("a.title");
+    var articleCount = articles.length - 1;
 
-    $("a.title").each(function(i, element) {
+    articles.each(function(i, element) {
       var result = {};
       result.title = $(this).text();
       result.link = $(this).attr("href");
@@ -59,11 +61,13 @@ app.get("/scrape", function(req, res) {
         } else {
           console.log(doc);
         }
+
+        if (i === articleCount) {
+          res.send("Scrape Complete");
+        }
       });
     });
   });
-
-  res.send("Scrape Complete");
 });
 
 // This will get the articles we scraped from the mongoDB
