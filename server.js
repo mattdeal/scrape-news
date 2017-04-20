@@ -26,7 +26,9 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://heroku_fv44zl6d:ddc0kl09i49sjk1ljcl0toaclf@ds163360.mlab.com:63360/heroku_fv44zl6d");
+// mongoose.connect("mongodb://heroku_fv44zl6d:ddc0kl09i49sjk1ljcl0toaclf@ds163360.mlab.com:63360/heroku_fv44zl6d");
+mongoose.connect("mongodb://localhost/scrapenews1");
+
 var db = mongoose.connection;
 
 // Show any mongoose errors
@@ -81,44 +83,56 @@ app.get("/articles/:id", function(req, res) {
   // TODO
   // ====
   // Finish the route so it finds one article using the req.params.id,
-  // and run the populate method with "note",
-  // then responds with the article with the note included
+  // and run the populate method with "Comment",
+  // then responds with the article with the Comment included
   Article.findOne({ _id: req.params.id })
-    .populate('comment')
+    .populate('comments')
     .exec(function(err, doc) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(doc);
-    }
+      if (err) {
+        res.send(err);
+      } else {
+        console.log(doc);
+
+        res.send(doc);
+      }
   });
 });
 
-// Create a new note or replace an existing note
+// Create a new Comment or replace an existing Comment
 app.post("/articles/:id", function(req, res) {
   // TODO
   // ====
-  // save the new note that gets posted to the Notes collection
+  // save the new Comment that gets posted to the Comments collection
   // then find an article from the req.params.id
-  // and update it's "note" property with the _id of the new note
+  // and update it's "Comment" property with the _id of the new Comment
+  console.log('post req.body');
+  console.log(req.body);
 
-   var newNote = new Note(req.body);
-  // Save the new note to mongoose
-  newNote.save(function(error, doc) {
+  console.log('post req.params.id');
+  console.log(req.params.id);
+
+  var newComment = new Comment(req.body);
+  console.log('post new comment')
+  console.log(newComment);
+
+  // Save the new Comment to mongoose
+  newComment.save(function(error, doc) {
     // Send any errors to the browser
     if (error) {
       res.send(error);
     } else {
-      Article.findOneAndUpdate({ _id: req.params.id }, 
-        { "comment": doc._id}, 
-        // { new: true }, 
+      Article.findOneAndUpdate(
+        { _id: req.params.id }, 
+        {$push: { "comments": newComment._id }}, 
+        // { safe: true }, 
+        // { upsert: true },
         function(err, newDoc) {
           if (err) {
             res.send(err);
           } else {
             res.send(newDoc);
           }
-      });
+        });
     }
   });  
 });
